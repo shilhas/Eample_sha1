@@ -15,7 +15,7 @@ uint32 h3 = 0x10325476U;
 uint32 h4 = 0xC3D2E1F0U;
 
 
-uint32 * sha_1(uint8 *msg, _int64 len)
+uint32  sha_1(uint8 *msg, uint64 len)
 {
 	/*length is assumed to be in bits*/
 	uint16 k = 0;
@@ -146,10 +146,11 @@ void calculatehash(uint8 *msg)
 }
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
 	uint8 a[27] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27};
-	sha_1(&a[0],480);
+	uint32 msg_d;
+	msg_d = sha_1(&a[0],480);
 	return 0;
 }
 
