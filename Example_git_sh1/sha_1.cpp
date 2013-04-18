@@ -14,10 +14,16 @@ int main()
 {
 	vector<int> vnum;
 	int num;
-	char uchoice;
 
 	cout << "Please enter a number" << endl;
 	cin >> num;
+	switch(num)
+	{
+	case 1:
+	case 2:
+	default:
+		break;
+	}
 
 }
 
