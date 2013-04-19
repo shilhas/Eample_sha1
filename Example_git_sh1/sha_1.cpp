@@ -8,11 +8,19 @@
 
 #include "Std_Types.h"
 
+#if (BIG_ENDIAN == TRUE)
 uint32 h0 = 0x67452301U;
 uint32 h1 = 0xEFCDAB89U;
 uint32 h2 = 0x98BADCFEU;
 uint32 h3 = 0x10325476U;
 uint32 h4 = 0xC3D2E1F0U;
+#else
+uint32 h0 = 0x01234567U;
+uint32 h1 = 0x89ABCDEFU;
+uint32 h2 = 0xFEDCBA98U;
+uint32 h3 = 0x76543210U;
+uint32 h4 = 0xF0E1D2C3U;
+#endif
 
 
 uint32  sha_1(uint8 *msg, uint64 len)
