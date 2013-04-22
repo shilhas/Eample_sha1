@@ -30,6 +30,9 @@ uint32  sha_1(uint8 *msg, uint64 len)
 	uint8 m[64];
 	uint16 s_len = 0;
 	uint16 cyc_rep = 0;
+	bool mid_size = FALSE;
+	uint8 x;
+	uint16 i;
 
 	/*convert the length to bytes*/
 #if (LEN_IN_BIT == TRUE)
@@ -45,6 +48,7 @@ uint32  sha_1(uint8 *msg, uint64 len)
 	}
 	else if((len > 56) && (len < 65))
 	{
+		mid_size = TRUE;
 		cyc_rep = 2;
 	}
 	else
@@ -55,10 +59,9 @@ uint32  sha_1(uint8 *msg, uint64 len)
 	/*loop for each chunk*/
 	for(uint16 j = 0; j < cyc_rep; j++)
 	{
-		uint16 i;
 
 		/*Check if it is the last repetition*/
-		if(j == (cyc_rep - 1))
+		if((j == (cyc_rep - 1))&&(FALSE == mid_size))
 		{
 			/*Get length of last repetition*/
 			s_len = len & 0x3F;
@@ -80,6 +83,22 @@ uint32  sha_1(uint8 *msg, uint64 len)
 				m[s_len + n + 1] = 0;
 			}
 		}
+		else if((j == (cyc_rep - 1))&&(TRUE == mid_size))
+		{
+			/*Fill zeroes for the last block and append length*/
+			for (x = 0; x < 64; x++)
+			{
+				if(x < 56)
+				{
+					m[x] = 0;
+				}
+				/*append length of the message*/
+				else
+				{
+					m[x] = (len >> ((63 - x)<<3)) & 0xff;
+				}
+			}
+		}
 		else
 		{
 			/*not last repetition hence set the length as 512*/
@@ -92,11 +111,11 @@ uint32  sha_1(uint8 *msg, uint64 len)
 		}
 
 
-	}
+	}//End For loop
 
 
 
-	return (uint32*)&k;
+	return k;
 }
 
 

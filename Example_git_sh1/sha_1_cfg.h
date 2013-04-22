@@ -9,6 +9,6 @@
 #define SHA_1_CFG_H_
 
 #define BIG_ENDIAN FALSE
-#define LEN_IN_BIT FALSE
+#define LEN_IN_BIT TRUE
 
 #endif /* SHA_1_CFG_H_ */

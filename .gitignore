@@ -1,1 +1,3 @@
 .cproject
+*.d
+*.o
