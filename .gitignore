@@ -1,4 +1,5 @@
 .cproject
 *.d
 *.o
+*~
 Debug

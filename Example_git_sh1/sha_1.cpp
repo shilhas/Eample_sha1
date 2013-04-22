@@ -33,15 +33,16 @@ static uint16 cyc_rep;
 
 /*Static Function Declaration*/
 
-static void creat_firstblock_midsize(uint8 *msg, uint64 len);
+static void creat_firstblock_midsize(uint8 *msg, uint16 len);
 static uint32  sha_1(uint8 *msg, uint64 len);
 static void calculatehash(uint8 *msg);
+static void conv_msgbyte_to_word(uint8 *msg,uint8 * msg_32);
 
 /*End Static Function Declaration*/
 
 ///////////////Block Manipulation Section/////////////////////
 
-static void creat_firstblock_midsize(uint8 *msg, uint64 len)
+static void creat_firstblock_midsize(uint8 *msg, uint16 len)
 {
 	uint8 x;
 	mid_size = TRUE;
@@ -78,7 +79,7 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 	}
 	else if((len > 56) && (len < 65))
 	{
-		creat_firstblock_midsize(msg, len);
+		creat_firstblock_midsize(msg, (uint16)len);
 	}
 	else
 	{
@@ -95,7 +96,7 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 			/*Check if the last block size is > 55 and < 64*/
 			if((len & 0x3f) > 55)
 			{
-				creat_firstblock_midsize(msg,len);
+				creat_firstblock_midsize(msg,(uint16)len);
 			}
 			else
 			{
@@ -105,6 +106,7 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 				m[s_len] = 0x80;     /*append 1*/
 				k = ((55 - s_len) & 0x3F);
 #else
+				//TODO:Append bit '1' for little endian machine.
 				m[s_len] = 0x00U;
 				m[s_len + 1] = 0x00U;
 				m[s_len + 2] = 0x00U;
@@ -167,7 +169,7 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 
 ///////////////Block Hash Calculation Section/////////////////////
 
-void conv_msgbyte_to_word(uint8 *msg,uint8 * msg_32)
+static void conv_msgbyte_to_word(uint8 *msg,uint8 * msg_32)
 {
 	uint8 i;
 #if (BIG_ENDIAN == FALSE)
