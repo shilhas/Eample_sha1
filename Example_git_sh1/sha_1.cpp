@@ -7,6 +7,7 @@
 
 
 #include "Std_Types.h"
+#include "sha_1_cfg.h"
 
 #if (BIG_ENDIAN == TRUE)
 uint32 h0 = 0x67452301U;
@@ -25,22 +26,30 @@ uint32 h4 = 0xF0E1D2C3U;
 
 uint32  sha_1(uint8 *msg, uint64 len)
 {
-	/*length is assumed to be in bits*/
 	uint16 k = 0;
 	uint8 m[64];
 	uint16 s_len = 0;
 	uint16 cyc_rep = 0;
 
 	/*convert the length to bytes*/
+#if (LEN_IN_BIT == TRUE)
 	len = len >> 3;
+#endif
+
+	/*Check if the block needs to be divided, if the length is > 55 then it would
+	 * be necessary to divide the block*/
 	if(len > 64)
 	{
 		/*divide length into 512 bit chunks*/
-		cyc_rep = (len >> 9) + 1;
+		cyc_rep = (len >> 6) + 1;
 	}
 	else if((len > 56) && (len < 65))
 	{
 		cyc_rep = 2;
+	}
+	else
+	{
+		cyc_rep = 1;
 	}
 
 	/*loop for each chunk*/
@@ -48,10 +57,10 @@ uint32  sha_1(uint8 *msg, uint64 len)
 	{
 		uint16 i;
 
-		/*Check if it is the last repeatation*/
+		/*Check if it is the last repetition*/
 		if(j == (cyc_rep - 1))
 		{
-			/*Get lenght of last repeatation*/
+			/*Get length of last repetition*/
 			s_len = len & 0x3F;
 			m[s_len] = 0x80;     /*append 1*/
 
@@ -73,11 +82,11 @@ uint32  sha_1(uint8 *msg, uint64 len)
 		}
 		else
 		{
-			/*not last repeatation hence set the lenght as 512*/
-			s_len = 512;
+			/*not last repetition hence set the length as 512*/
+			s_len = 64;
 		}
 
-		for (i = 0; i < (s_len >> 3); i++)
+		for (i = 0; i < (s_len); i++)
 		{
 			m[i] = (uint8)(*msg++);
 		}

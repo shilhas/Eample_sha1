@@ -19,5 +19,7 @@ typedef signed int             sint32;
 typedef signed long long       sint64;
 typedef signed long            sl32;
 
+#define FALSE    0
+#define TRUE     1
 
 #endif /* STD_TYPES_H_ */
