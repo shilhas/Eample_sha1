@@ -37,6 +37,7 @@ static void creat_firstblock_midsize(uint8 *msg, uint16 len);
 static uint32  sha_1(uint8 *msg, uint64 len);
 static void calculatehash(uint8 *msg);
 static void conv_msgbyte_to_word(uint8 *msg,uint8 * msg_32);
+static void conv_Little2Big_Endian(uint8 *msg, uint16 length)
 
 /*End Static Function Declaration*/
 
@@ -162,6 +163,7 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 					m[x] = (len >> ((63 - x)<<3)) & 0xff;
 				}
 			}
+			/*Converting to Big Endian not necessary*/
 			calculatehash(&m[0]);
 			break;
 		}
@@ -181,7 +183,9 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 		{
 			m[i] = (uint8)(*msg++);
 		}
-
+#if (BIG_ENDIAN == FALSE)
+		conv_Little2Big_Endian(m,s_len);
+#endif
 		calculatehash(&m[0]);
 
 
@@ -198,19 +202,13 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 
 static void conv_msgbyte_to_word(uint8 *msg,uint8 * msg_32)
 {
+	/*msg is assumed to be in big Endian format*/
 	uint8 i;
-#if (BIG_ENDIAN == FALSE)
-	uint8 j;
-	for (i = 0; i < 61; i+=4)
+	for(i = 0; i < 64; i++)
 	{
-		for(j = 4; j > 0; j--)
-		{
-			msg_32[i + (4 - j)] = msg[i + j - 1];
-		}
+		msg_32[i] = msg[i];
 	}
-#else
-	msg_32 = msg;
-#endif
+
 }
 
 static void calculatehash(uint8 *msg)
@@ -230,7 +228,7 @@ static void calculatehash(uint8 *msg)
 		temp = (msg_32[i] & 0x80000000) >> 31;
 		msg_32[i] = (msg_32[i] << 1) & temp;
 	}
-
+//commented
 	/*Set Initial values*/
 	a = h0;
 	b = h1;
