@@ -57,6 +57,37 @@ static void creat_firstblock_midsize(uint8 *msg, uint16 len)
 	cyc_rep = 2;
 }
 
+#if (BIG_ENDIAN == FALSE)
+/*can convert data up to length 65535*/
+/*NOTE:message buffer size should be multiple of 4bytes else during append operation there may be problem*/
+static void conv_Little2Big_Endian(uint8 *msg, uint16 length)
+{
+	uint8 i;
+	uint8 j;
+	uint8 temp;
+	//uint8 rep_val;
+
+	for (i = 0; i < (length - 3); i+=4)
+	{
+		if((length - i) < 4)
+		{
+			//append 0 to make length multiple of 4
+			for(j = 0;j < (4 - (length - i));j++)
+			{
+				msg[length + j] = 0;
+			}
+		}
+
+		for(j = 4; j > 0; j--)
+		{
+			temp = msg[i + (4 - j)];
+			msg[i + (4 - j)] =  msg[i+j-1];
+			msg[i+j-1] = temp;
+		}
+	}
+}
+#endif
+
 
 static uint32  sha_1(uint8 *msg, uint64 len)
 {
@@ -102,16 +133,12 @@ static uint32  sha_1(uint8 *msg, uint64 len)
 			{
 				/*Get length of last repetition*/
 				s_len = len & 0x3F;
-#if (BIG_ENDIAN == TRUE)
+#if (BIG_ENDIAN == FALSE)
+				//TODO:Append bit '1' for little endian machine.
+				conv_Little2Big_Endian(m,s_len);
+#endif
 				m[s_len] = 0x80;     /*append 1*/
 				k = ((55 - s_len) & 0x3F);
-#else
-				//TODO:Append bit '1' for little endian machine.
-				m[s_len] = 0x00U;
-				m[s_len + 1] = 0x00U;
-				m[s_len + 2] = 0x00U;
-				m[s_len + 3] = 0x80U;     /*append 1*/
-#endif
 
 				for(uint8 n = 0; n < k; n++)
 				{
