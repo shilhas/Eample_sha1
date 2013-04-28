@@ -262,11 +262,11 @@ static void calculatehash(uint8 *msg)
 		}
 
 		temp = (a & 0xF8000000U) >> 27;
-		temp1 = ((a << 5) & temp) + f + e + k + msg_32[i];
+		temp1 = ((a << 5) | temp) + f + e + k + msg_32[i];
 		e = d;
 		d = c;
 		temp = ((b & 0xFFFFFFFCU)>>2);
-		c = (b << 30) & temp;
+		c = (b << 30) | temp;
 		b = a;
 		a = temp1;
 	}
