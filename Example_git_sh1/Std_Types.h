@@ -22,4 +22,7 @@ typedef signed long            sl32;
 #define FALSE    0
 #define TRUE     1
 
+#define STD_ON  1
+#define STD_OFF 0
+
 #endif /* STD_TYPES_H_ */
